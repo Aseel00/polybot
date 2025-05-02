@@ -75,4 +75,73 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def __init__(self, token,telegram_chat_url ):
+        super().__init__(token, telegram_chat_url)
+        self.concat_sessions = {}  # Store chat_id -> first image path
+
+    def handle_message(self, msg):
+        try:
+            logger.info(f'Incoming message: {msg}')
+            chat_id = msg['chat']['id']
+            if 'text' in msg:
+                text = msg['text'].strip().lower()
+                if text == '/start' or True:  # Respond to any text
+                    self.send_text(chat_id, "Hi, how can I help you?")
+                    return
+            if 'photo' in msg:
+                caption = msg.get("caption", "").strip().lower()
+                photo_path = self.download_user_photo(msg)
+
+                valid_filters = {
+                    'blur': 'blur',
+                    'contour': 'contour',
+                    'rotate': 'rotate',
+                    'segment': 'segment',
+                    'salt and pepper': 'salt_n_pepper',
+                    'concat': 'concat'
+                }
+
+                # If user is in concat session, use the previous image and this one to concat
+                if chat_id in self.concat_sessions:
+                    first_photo_path = self.concat_sessions.pop(chat_id)
+                    img1 = Img(first_photo_path)
+                    img2 = Img(photo_path)
+                    try:
+
+                        img1.concat(img2, direction='horizontal')
+                        filtered_img_path = img1.save_img()
+                        self.send_photo(chat_id, filtered_img_path)
+                    except RuntimeError as e:
+                        self.send_text(chat_id, f"Concat failed: {e}")
+
+
+                    return
+
+                # Start concat session
+                if caption == 'concat':
+                    self.concat_sessions[chat_id] = photo_path
+                    #self.send_text(chat_id, "Got the first photo for concatenation. Please send the second photo.")
+                    return
+
+                if not caption:
+                    self.send_text(chat_id, "Please include a caption indicating the filter (e.g., 'blur').")
+                    return
+
+                if caption not in valid_filters:
+                    self.send_text(chat_id,
+                        "Unsupported filter. Please use one of: Blur, Contour, Rotate, Segment, Salt and pepper, Concat.")
+                    return
+
+                # Apply regular filters
+                img = Img(photo_path)
+                filter_method = getattr(img, valid_filters[caption])
+                filter_method()
+                filtered_img_path = img.save_img()
+                self.send_photo(chat_id, filtered_img_path)
+
+            else:
+                self.send_text(chat_id, "Please send a photo with a caption indicating the filter.")
+
+        except Exception as e:
+            logger.error(f"Error processing image: {e}")
+            self.send_text(msg['chat']['id'], "Something went wrong... please try again.")
