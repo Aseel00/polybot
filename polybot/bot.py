@@ -91,6 +91,39 @@ class ImageProcessingBot(Bot):
             if 'photo' in msg:
                 caption = msg.get("caption", "").strip().lower()
                 photo_path = self.download_user_photo(msg)
+                if caption == "detect":
+                    try:
+                        import requests
+
+                        # Send image to YOLO API
+                        yolo_api_url = "http://localhost:8080/predict"  # Change if needed
+                        with open(photo_path, "rb") as f:
+                            files = {"file": (os.path.basename(photo_path), f, "image/jpeg")}
+                            response = requests.post(yolo_api_url, files=files)
+                        response.raise_for_status()
+                        result = response.json()
+                        labels = result.get("labels", [])
+                        prediction_uid = result.get("prediction_uid")
+
+                        if not prediction_uid:
+                            self.send_text(chat_id, "Failed to get prediction UID.")
+                            return
+
+                        # Get annotated image
+                        image_url = f"http://localhost:8080/prediction/{prediction_uid}/image"
+                        image_response = requests.get(image_url, headers={"accept": "image/jpeg"})
+                        image_response.raise_for_status()
+
+                        # Send image and labels
+                        label_list = " ".join(f" {label}" for label in labels) or "No objects detected."
+                        #self.telegram_bot_client.send_photo(chat_id, image_response.content,
+                         #                                   caption=f"Detected:\n{label_list}")
+                        self.send_text(chat_id,label_list)
+
+                    except Exception as e:
+                        logger.error(f"YOLO detection error: {e}")
+                        self.send_text(chat_id, "Object detection failed. Please try again.")
+                    return
 
                 valid_filters = {
                     'blur': 'blur',
@@ -102,7 +135,7 @@ class ImageProcessingBot(Bot):
                 }
 
                 # If user is in concat session, use the previous image and this one to concat
-                if chat_id in self.concat_sessions:
+                if chat_id in self.concat_sessions and not caption:
                     first_photo_path = self.concat_sessions.pop(chat_id)
                     img1 = Img(first_photo_path)
                     img2 = Img(photo_path)
@@ -120,6 +153,7 @@ class ImageProcessingBot(Bot):
                 # Start concat session
                 if caption == 'concat':
                     self.concat_sessions[chat_id] = photo_path
+
                     #self.send_text(chat_id, "Got the first photo for concatenation. Please send the second photo.")
                     return
 
