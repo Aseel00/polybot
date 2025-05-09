@@ -98,7 +98,7 @@ class ImageProcessingBot(Bot):
 
                         # Send image to YOLO API
                         #yolo_api_url = "http://localhost:8080/predict"  # Change if needed
-                        yolo_api_url = f"{self.yolo_url}:8080/predict"
+                        yolo_api_url = f"http://{self.yolo_url}:8080/predict"
                         with open(photo_path, "rb") as f:
                             files = {"file": (os.path.basename(photo_path), f, "image/jpeg")}
                             response = requests.post(yolo_api_url, files=files)
@@ -113,7 +113,7 @@ class ImageProcessingBot(Bot):
 
                         # Get annotated image
                         #image_url = f"http://localhost:8080/prediction/{prediction_uid}/image"
-                        image_url = f"{self.yolo_url}:8080/prediction/{prediction_uid}/image"
+                        image_url = f"http://{self.yolo_url}:8080/prediction/{prediction_uid}/image"
                         image_response = requests.get(image_url, headers={"accept": "image/jpeg"})
                         image_response.raise_for_status()
 
