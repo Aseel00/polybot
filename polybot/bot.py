@@ -75,8 +75,9 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, token,telegram_chat_url ):
+    def __init__(self, token,telegram_chat_url,yolo_url):
         super().__init__(token, telegram_chat_url)
+        self.yolo_url=yolo_url
         self.concat_sessions = {}  # Store chat_id -> first image path
 
     def handle_message(self, msg):
@@ -96,7 +97,8 @@ class ImageProcessingBot(Bot):
                         import requests
 
                         # Send image to YOLO API
-                        yolo_api_url = "http://localhost:8080/predict"  # Change if needed
+                        #yolo_api_url = "http://localhost:8080/predict"  # Change if needed
+                        yolo_api_url = f"{self.yolo_url}/predict"
                         with open(photo_path, "rb") as f:
                             files = {"file": (os.path.basename(photo_path), f, "image/jpeg")}
                             response = requests.post(yolo_api_url, files=files)
@@ -110,7 +112,8 @@ class ImageProcessingBot(Bot):
                             return
 
                         # Get annotated image
-                        image_url = f"http://localhost:8080/prediction/{prediction_uid}/image"
+                        #image_url = f"http://localhost:8080/prediction/{prediction_uid}/image"
+                        image_url = f"{self.yolo_url}/prediction/{prediction_uid}/image"
                         image_response = requests.get(image_url, headers={"accept": "image/jpeg"})
                         image_response.raise_for_status()
 
