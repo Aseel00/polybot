@@ -12,7 +12,7 @@ NGROK_URL="https://prepared-ruling-gnat.ngrok-free.app"
 echo "Ngrok URL: $NGROK_URL"
 
 # Step 3: Export environment variables
-export TELEGRAM_BOT_TOKEN="8184702002:AAHVhaKcDiRq0PD5MiXhOx6JNZScbjT2dFw"
+export TELEGRAM_BOT_TOKEN=${{secrets.TELEGRAM_BOT_TOKEN }}
 export YOLO_URL="10.0.1.29"
 export BOT_APP_URL=$NGROK_URL
 
