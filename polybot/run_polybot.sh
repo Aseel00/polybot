@@ -12,7 +12,7 @@ NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z
 echo "Ngrok URL: $NGROK_URL"
 
 # Step 3: Export environment variables
-export TELEGRAM_BOT_TOKEN=${{secrets.TELEGRAM_BOT_TOKEN}}
+export TELEGRAM_BOT_TOKEN=${{Secrets.TELEGRAM_BOT_TOKEN}}
 export YOLO_URL="10.0.1.29"
 export BOT_APP_URL=$NGROK_URL
 
