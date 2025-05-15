@@ -12,10 +12,11 @@ NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z
 echo "Ngrok URL: $NGROK_URL"
 
 # Step 3: Export environment variables
-export TELEGRAM_BOT_TOKEN=${{Secrets.TELEGRAM_BOT_TOKEN}}
-export YOLO_URL="10.0.1.29"
+export TELEGRAM_BOT_TOKEN=8184702002:AAHVhaKcDiRq0PD5MiXhOx6JNZScbjT2dFw
+export YOLO_URL=localhost
 export BOT_APP_URL=$NGROK_URL
-
+export REGION="eu-north-1"
+export BUCKET_NAME="aseel-polybot-images"
 # Step 4: Run the polybot app
 echo "Starting polybot app..."
 python3 -m polybot.app
