@@ -62,6 +62,8 @@ jobs:
                   git clone --branch main ${REPO_URL} ~/${REPO_NAME}
                 fi
               "
+          
+          
 
       - name: Execute script on EC2
         env:
