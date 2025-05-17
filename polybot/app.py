@@ -14,6 +14,7 @@ YOLO_URL=os.environ['YOLO_URL']
    # print("Flask registered routes:")
     #for rule in app.url_map.iter_rules():
      #   print(rule)
+#test
 
 @app.route('/', methods=['GET'])
 def index():
