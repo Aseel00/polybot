@@ -2,7 +2,7 @@
 
 set -e  # Exit immediately if a command exits with a non-zero status
 
-PROJECT_DIR="/home/ubuntu/polybot/polybot"
+PROJECT_DIR="/home/ubuntu/polybot"
 VENV_DIR="$PROJECT_DIR/.venv"
 SERVICE_NAME="polybot.service"
 
