@@ -61,15 +61,16 @@ jobs:
         
           
 
-      - name: Execute script on EC2
+      - name: Execute deploy.sh on EC2
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           YOLO_URL: ${{ secrets.YOLO_URL }}
           NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
         run: |
-          ssh ec2 "
-            export TELEGRAM_BOT_TOKEN='$TELEGRAM_BOT_TOKEN' &&
-            export YOLO_URL='$YOLO_URL' &&
-            export NGROK_AUTHTOKEN='$NGROK_AUTHTOKEN' &&
-            cd \$REPO_NAME &&
+          ssh ec2 'bash -s' << 'EOF'
+            export TELEGRAM_BOT_TOKEN='${{ secrets.TELEGRAM_BOT_TOKEN }}'
+            export YOLO_URL='${{ secrets.YOLO_URL }}'
+            export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
+            cd ~/${{ env.REPO_NAME }}
             bash deploy.sh
+          EOF
