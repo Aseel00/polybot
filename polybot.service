@@ -3,9 +3,10 @@ Description=Polybot  Server
 After=network.target
 
 [Service]
-WorkingDirectory=/home/ubuntu/polybot/polybot
+WorkingDirectory=/home/ubuntu/polybot
 ExecStart=/home/ubuntu/polybot/polybot/run_polybot.sh
 Restart=always
+EnvironmentFile=/home/ubuntu/polybot/.env
 
 [Install]
 WantedBy=multi-user.target
