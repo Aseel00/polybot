@@ -17,13 +17,13 @@ jobs:
         run: |
           echo -e "\n\nTesting concat()\n"
           python -m polybot.test.test_concat
-
+          
           echo -e "\n\nTesting rotate()\n"
           python -m polybot.test.test_rotate
-
+          
           echo -e "\n\nTesting salt_n_pepper()\n"
           python -m polybot.test.test_salt_n_pepper
-
+          
           echo -e "\n\nTesting segment()\n"
           python -m polybot.test.test_segment
       - name: Test bot
