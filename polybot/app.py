@@ -16,6 +16,7 @@ YOLO_URL=os.environ['YOLO_URL']
      #   print(rule)
 #test
 #testing again
+#check tests
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
