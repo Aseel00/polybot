@@ -15,7 +15,7 @@ YOLO_URL=os.environ['YOLO_URL']
     #for rule in app.url_map.iter_rules():
      #   print(rule)
 #test
-
+#testing again
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
