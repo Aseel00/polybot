@@ -53,9 +53,9 @@ jobs:
             if [ -d ~/${REPO_NAME} ]; then
               cd ~/${REPO_NAME}
               git fetch origin
-              git reset --hard origin/main
+              git reset --hard origin/dev
             else
-              git clone --branch main ${REPO_URL} ~/${REPO_NAME}
+              git clone --branch dev ${REPO_URL} ~/${REPO_NAME}
             fi
           "
         
@@ -72,5 +72,5 @@ jobs:
             export YOLO_URL='${{ secrets.YOLO_URL }}'
             export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
             cd ~/${{ env.REPO_NAME }}
-            bash deploy-dev
+            bash deploy-dev.sh
           EOF
