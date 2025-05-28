@@ -1,15 +1,18 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status
+set -e  # Exit on any error
 
 PROJECT_DIR="/home/ubuntu/polybot"
 VENV_DIR="$PROJECT_DIR/.venv"
 SERVICE_NAME="polybot-dev.service"
 
+echo "🐍 Detecting Python version..."
+PYTHON_VERSION=$(python3 -c "import sys; print(f'python{sys.version_info.major}.{sys.version_info.minor}')")
+VENV_PACKAGE="${PYTHON_VERSION}-venv"
 
-echo "🧪 Ensuring python3-venv is installed..."
+echo "🧪 Ensuring $VENV_PACKAGE is installed..."
 sudo apt-get update
-sudo apt-get install -y python3-venv
+sudo apt-get install -y "$VENV_PACKAGE"
 
 echo "📁 Navigating to project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR"
@@ -18,11 +21,16 @@ cd "$PROJECT_DIR"
 if [ ! -d "$VENV_DIR" ]; then
   echo "🐍 Creating virtual environment..."
   python3 -m venv "$VENV_DIR"
+
+  if [ ! -f "$VENV_DIR/bin/activate" ]; then
+    echo "❌ Failed to create virtual environment. Exiting."
+    exit 1
+  fi
 fi
 
-# Step 2: Activate virtual environment
 echo "🔌 Activating virtual environment..."
 source "$VENV_DIR/bin/activate"
+
 
 # Step 3: Check if dependencies are installed (change PACKAGE_TO_CHECK if needed)
 PACKAGE_TO_CHECK="loguru"  # Example core dependency
