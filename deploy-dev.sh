@@ -6,6 +6,11 @@ PROJECT_DIR="/home/ubuntu/polybot"
 VENV_DIR="$PROJECT_DIR/.venv"
 SERVICE_NAME="polybot-dev.service"
 
+
+echo "🧪 Ensuring python3-venv is installed..."
+sudo apt-get update
+sudo apt-get install -y python3-venv
+
 echo "📁 Navigating to project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR"
 
