@@ -4,7 +4,7 @@ set -e  # Exit immediately if a command exits with a non-zero status
 
 PROJECT_DIR="/home/ubuntu/polybot"
 VENV_DIR="$PROJECT_DIR/.venv"
-SERVICE_NAME="polybot.service"
+SERVICE_NAME="polybot-dev.service"
 
 echo "📁 Navigating to project directory: $PROJECT_DIR"
 cd "$PROJECT_DIR"
