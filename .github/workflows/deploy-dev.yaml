@@ -5,7 +5,7 @@ on:
   # The workflow will run when a push is made to branch `main`
   push:
     branches:
-     - main
+     - dev
 
   # Allow to run it manually as well from GitHub web
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
       - name: Configure SSH
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
         run: |
           mkdir -p ~/.ssh
@@ -53,9 +53,9 @@ jobs:
             if [ -d ~/${REPO_NAME} ]; then
               cd ~/${REPO_NAME}
               git fetch origin
-              git reset --hard origin/main
+              git reset --hard origin/dev
             else
-              git clone --branch main ${REPO_URL} ~/${REPO_NAME}
+              git clone --branch dev ${REPO_URL} ~/${REPO_NAME}
             fi
           "
         
@@ -63,8 +63,8 @@ jobs:
 
       - name: Execute deploy.sh on EC2
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          YOLO_URL: ${{ secrets.YOLO_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
+          YOLO_URL: ${{ secrets.YOLO_URL_DEV }}
           NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
         run: |
           ssh ec2 'bash -s' << 'EOF'
@@ -72,5 +72,5 @@ jobs:
             export YOLO_URL='${{ secrets.YOLO_URL }}'
             export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
             cd ~/${{ env.REPO_NAME }}
-            bash deploy.sh
+            bash deploy-dev.sh
           EOF
