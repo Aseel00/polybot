@@ -47,6 +47,9 @@ else
   echo "✅ Dependencies already installed, skipping pip install."
 fi
 
+sudo apt install python3-pip
+pip install boto3
+
 # Step 4: Copy the systemd service file
 echo "🛠️  Setting up systemd service..."
 sudo cp "$PROJECT_DIR/$SERVICE_NAME" /etc/systemd/system/$SERVICE_NAME
