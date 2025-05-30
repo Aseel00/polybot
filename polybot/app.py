@@ -8,15 +8,7 @@ app = flask.Flask(__name__)
 TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
 BOT_APP_URL = os.environ['BOT_APP_URL']
 YOLO_URL=os.environ['YOLO_URL']
-#print(f"Token used in route: {'TELEGRAM_BOT_TOKEN'}")
 
-#def show_routes():
-   # print("Flask registered routes:")
-    #for rule in app.url_map.iter_rules():
-     #   print(rule)
-#test
-#testing again
-#check tests again
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
