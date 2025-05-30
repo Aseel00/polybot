@@ -9,6 +9,8 @@ TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
 BOT_APP_URL = os.environ['BOT_APP_URL']
 YOLO_URL=os.environ['YOLO_URL']
 
+
+
 @app.route('/', methods=['GET'])
 def index():
     return 'Ok'
