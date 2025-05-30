@@ -1,8 +1,18 @@
 #!/bin/bash
 
 # Step 1: Start ngrok in the background on port 8443
+source /home/ubuntu/polybot/.env
+
 echo "Starting ngrok on port 8443..."
-ngrok http 8443 > /dev/null &
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok
+
+ngrok config add-authtoken "$NGROK_AUTHTOKEN"
+ngrok http 8443  > /dev/null &
 
 # Wait a few seconds for ngrok to initialize
 sleep 5
@@ -12,11 +22,13 @@ NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z
 echo "Ngrok URL: $NGROK_URL"
 
 # Step 3: Export environment variables
-export TELEGRAM_BOT_TOKEN=8184702002:AAHVhaKcDiRq0PD5MiXhOx6JNZScbjT2dFw
-export YOLO_URL=localhost
+export TELEGRAM_BOT_TOKEN
+export YOLO_URL
 export BOT_APP_URL=$NGROK_URL
 export REGION="eu-north-1"
 export BUCKET_NAME="aseel-polybot-images"
+
 # Step 4: Run the polybot app
+
 echo "Starting polybot app..."
-python3 -m polybot.app
+exec /home/ubuntu/polybot/.venv/bin/python -m polybot.app
