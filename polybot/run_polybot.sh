@@ -25,8 +25,8 @@ echo "Ngrok URL: $NGROK_URL"
 export TELEGRAM_BOT_TOKEN
 export YOLO_URL
 export BOT_APP_URL=$NGROK_URL
-export REGION="eu-north-1"
-export BUCKET_NAME="aseel-polybot-images"
+export REGION
+export BUCKET_NAME
 
 # Step 4: Run the polybot app
 
