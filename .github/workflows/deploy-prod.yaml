@@ -72,5 +72,5 @@ jobs:
             export YOLO_URL='${{ secrets.YOLO_URL }}'
             export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
             cd ~/${{ env.REPO_NAME }}
-            bash deploy-prod
+            bash deploy-prod.sh
           EOF
