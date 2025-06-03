@@ -4,7 +4,9 @@ import os
 import time
 from telebot.types import InputFile
 from polybot.img_proc import Img
-
+import logging
+import boto3
+from botocore.exceptions import ClientError
 
 class Bot:
 
@@ -60,6 +62,28 @@ class Bot:
             InputFile(img_path)
         )
 
+    def upload_file(self,file_name, bucket, region, object_name=None):
+        """Upload a file to an S3 bucket
+
+        :param region: The bucket region
+        :param file_name: File to upload
+        :param bucket: Bucket to upload to
+        :param object_name: S3 object name. If not specified then file_name is used
+        :return: True if file was uploaded, else False
+        """
+
+        # If S3 object_name was not specified, use file_name
+        if object_name is None:
+            object_name = os.path.basename(file_name)
+
+        # Upload the file
+        s3_client = boto3.client('s3',region)
+        try:
+            response = s3_client.upload_file(file_name, bucket, object_name)
+        except ClientError as e:
+            logging.error(e)
+            return False
+        return True
     def handle_message(self, msg):
         """Bot Main message handler"""
         logger.info(f'Incoming message: {msg}')
@@ -75,9 +99,11 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, token,telegram_chat_url,yolo_url='http://localhost:8080'):
+    def __init__(self, token,telegram_chat_url,s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
         super().__init__(token, telegram_chat_url)
         self.yolo_url=yolo_url
+        self.s3_bucket=s3_bucket
+        self.region=region
         self.concat_sessions = {}  # Store chat_id -> first image path
 
     def handle_message(self, msg):
@@ -95,32 +121,24 @@ class ImageProcessingBot(Bot):
                 if caption == "detect":
                     try:
                         import requests
+                        image_name = os.path.basename(photo_path)
+                        uploaded = self.upload_file(photo_path, self.s3_bucket,self.region, image_name)
+                        if not uploaded:
+                            self.send_text(chat_id, "Failed to upload image to S3.")
+                            return
 
-                        # Send image to YOLO API
-                        #yolo_api_url = "http://localhost:8080/predict"  # Change if needed
                         yolo_api_url = f"http://{self.yolo_url}:8080/predict"
-                        with open(photo_path, "rb") as f:
-                            files = {"file": (os.path.basename(photo_path), f, "image/jpeg")}
-                            response = requests.post(yolo_api_url, files=files)
+                        data={"image_name":image_name}
+                        response = requests.post(yolo_api_url, data=data)
+
                         response.raise_for_status()
                         result = response.json()
                         labels = result.get("labels", [])
-                        prediction_uid = result.get("prediction_uid")
 
-                        if not prediction_uid:
-                            self.send_text(chat_id, "Failed to get prediction UID.")
-                            return
-
-                        # Get annotated image
-                        #image_url = f"http://localhost:8080/prediction/{prediction_uid}/image"
-                        image_url = f"http://{self.yolo_url}:8080/prediction/{prediction_uid}/image"
-                        image_response = requests.get(image_url, headers={"accept": "image/jpeg"})
-                        image_response.raise_for_status()
 
                         # Send image and labels
                         label_list = " ".join(f" {label}" for label in labels) or "No objects detected."
-                        #self.telegram_bot_client.send_photo(chat_id, image_response.content,
-                         #                                   caption=f"Detected:\n{label_list}")
+
                         self.send_text(chat_id,label_list)
 
                     except Exception as e:

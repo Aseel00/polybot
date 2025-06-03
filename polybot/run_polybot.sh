@@ -14,6 +14,7 @@ curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
 ngrok config add-authtoken "$NGROK_AUTHTOKEN"
 ngrok http 8443  > /dev/null &
 
+
 # Wait a few seconds for ngrok to initialize
 sleep 5
 
@@ -22,10 +23,14 @@ NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z
 echo "Ngrok URL: $NGROK_URL"
 
 # Step 3: Export environment variables
+
 export TELEGRAM_BOT_TOKEN
 export YOLO_URL
 export BOT_APP_URL=$NGROK_URL
+export REGION
+export BUCKET_NAME
 
 # Step 4: Run the polybot app
+
 echo "Starting polybot app..."
 exec /home/ubuntu/polybot/.venv/bin/python -m polybot.app
