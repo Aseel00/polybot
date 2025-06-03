@@ -113,7 +113,7 @@ class ImageProcessingBot(Bot):
             if 'text' in msg:
                 text = msg['text'].strip().lower()
                 if text == '/start' or True:  # Respond to any text
-                    self.send_text(chat_id, "Hi, how can I help you?")
+                    self.send_text(chat_id, "Hi,Aseel")
                     return
             if 'photo' in msg:
                 caption = msg.get("caption", "").strip().lower()
