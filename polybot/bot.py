@@ -99,7 +99,7 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, token,telegram_chat_url,s3_bucket,region,yolo_url='localhost'):
+    def __init__(self, token,telegram_chat_url,s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
         super().__init__(token, telegram_chat_url)
         self.yolo_url=yolo_url
         self.s3_bucket=s3_bucket
