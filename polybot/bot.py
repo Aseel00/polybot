@@ -21,9 +21,12 @@ class Bot:
 
         # set the webhook URL
         #self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
+        crt_path = os.path.expandvars('$HOME/polybot/polybot.crt')
         self.telegram_bot_client.set_webhook(
             url=f'{telegram_chat_url}/{token}/',
-            certificate=open('$HOME/polybot/polybot.crt', 'r'),
+            #certificate=open('$HOME/polybot/polybot.crt', 'r'),
+
+            certificate=open(crt_path, 'r'),
             timeout=60
         )
 
