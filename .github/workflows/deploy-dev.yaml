@@ -71,6 +71,8 @@ jobs:
             export TELEGRAM_BOT_TOKEN='${{ secrets.TELEGRAM_BOT_TOKEN }}'
             export YOLO_URL='${{ secrets.YOLO_URL }}'
             export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
+            export REGION= '${{ secrets.REGION }}'
+            export BUCKET_NAME= '${{ secrets.BUCKET_NAME }}'
             cd ~/${{ env.REPO_NAME }}
             bash deploy-dev.sh
           EOF
