@@ -9,7 +9,7 @@ export YOLO_URL
 export BOT_APP_URL
 export REGION
 export BUCKET_NAME
-
+export POLYBOT_ENV
 # Step 4: Run the polybot app
 
 echo "Starting polybot app..."
