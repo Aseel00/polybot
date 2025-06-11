@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 
 class Bot:
 
-    def __init__(self, token, telegram_chat_url):
+    def __init__(self, token, telegram_chat_url,polybot_env):
         # create a new instance of the TeleBot class.
         # all communication with Telegram servers are done using self.telegram_bot_client
         self.telegram_bot_client = telebot.TeleBot(token)
@@ -21,7 +21,10 @@ class Bot:
 
         # set the webhook URL
         #self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
-        crt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'polybot.crt'))
+        if polybot_env =='prod':
+            crt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'polybot.crt'))
+        else:
+            crt_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'polybot-dev.crt'))
         with open(crt_path, 'r') as certificate:
             self.telegram_bot_client.set_webhook(
                 url=f'{telegram_chat_url}/{token}/',
@@ -106,8 +109,8 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, token,telegram_chat_url,s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
-        super().__init__(token, telegram_chat_url)
+    def __init__(self, token,telegram_chat_url,polybot_env ="dev",s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
+        super().__init__(token, telegram_chat_url,polybot_env)
         self.yolo_url=yolo_url
         self.s3_bucket=s3_bucket
         self.region=region
