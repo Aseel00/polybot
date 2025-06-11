@@ -71,7 +71,9 @@ jobs:
             export TELEGRAM_BOT_TOKEN='${{ secrets.TELEGRAM_BOT_TOKEN }}'
             export YOLO_URL='${{ secrets.YOLO_URL }}'
             export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
-            export POLYBOT_ENV='${{ secrets.POLYBOT_ENV }}'
+            export REGION= '${{ secrets.REGION }}'
+            export BUCKET_NAME= '${{ secrets.BUCKET_NAME }}'
+            export POLYBOT_ENV='${{ secrets.POLYBOT_ENV_DEV }}'
             cd ~/${{ env.REPO_NAME }}
             bash deploy-dev.sh
           EOF
