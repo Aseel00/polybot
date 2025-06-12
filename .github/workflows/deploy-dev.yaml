@@ -61,11 +61,12 @@ jobs:
           BOT_APP_URL: aseel-dev.fursa.click
 
         run: |
-          ssh ec2 'bash -s' <<EOF
+          run: |
+            ssh ec2 'bash -s' <<EOF
           cd ~/polybot
           git fetch origin
           git reset --hard origin/dev
-
+          
           cat > .env <<EOL
           IMG_NAME=${{ inputs.image }}
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -74,6 +75,13 @@ jobs:
           REGION=${{ secrets.REGION }}
           BUCKET_NAME=${{ secrets.BUCKET_NAME }}
           EOL
+
+          cat .env 
+          
+          docker compose -f docker-compose.dev.yaml pull
+          docker compose -f docker-compose.dev.yaml up -d
+          EOF
+
 
 
           docker compose -f docker-compose.dev.yaml pull
