@@ -56,15 +56,21 @@ jobs:
 
       - name: Trigger Docker Compose remotely
         run: |
-          ssh ec2 "cd ~/polybot && \
-            git fetch origin && \
-            git reset --hard origin/dev && \
-            echo 'IMG_NAME=${{ inputs.image }}' > .env && \
-            echo 'TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}' >> .env && \
-            echo 'BOT_APP_URL=aseel-dev.fursa.click' >> .env && \
-            echo 'YOLO_URL=${{ secrets.YOLO_URL }}' >> .env && \
-            echo 'REGION=${{ secrets.REGION }}' >> .env && \
-            echo 'BUCKET_NAME=${{ secrets.BUCKET_NAME }}' >> .env && \
-            cat .env && \
-            docker compose -f docker-compose.dev.yaml pull && \
-            docker compose -f docker-compose.dev.yaml up -d"
+          IMG_NAME="${{ inputs.image }}"
+          ssh ec2 <<EOF
+          cd ~/polybot
+          git fetch origin
+          git reset --hard origin/dev
+    
+          echo "IMG_NAME=${IMG_NAME}" > .env
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "BOT_APP_URL=aseel-dev.fursa.click" >> .env
+          echo "YOLO_URL=${{ secrets.YOLO_URL }}" >> .env
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
+    
+          cat .env  # debug output
+    
+          docker compose -f docker-compose.dev.yaml pull
+          docker compose -f docker-compose.dev.yaml up -d
+          EOF
