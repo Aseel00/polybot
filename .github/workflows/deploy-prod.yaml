@@ -6,6 +6,24 @@ on:
       image:
         required: true
         type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      EC2_HOST:
+        required: true
+      EC2_USERNAME:
+        required: true
+      TELEGRAM_BOT_TOKEN:
+        required: true
+      YOLO_URL:
+        required: true
+      REGION:
+        required: true
+      BUCKET_NAME:
+        required: true
+
+
+
   workflow_dispatch:
     inputs:
       image:
@@ -15,37 +33,50 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Configure SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/private_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private_key
           chmod 600 ~/.ssh/private_key
-          echo "
+          cat > ~/.ssh/config <<EOF
           Host ec2
-              HostName $EC2_HOST
-              User $EC2_USERNAME
-              IdentityFile ~/.ssh/private_key
-              StrictHostKeyChecking no
-          " > ~/.ssh/config
+            HostName ${{ secrets.EC2_HOST }}
+            User ${{ secrets.EC2_USERNAME }}
+            IdentityFile ~/.ssh/private_key
+            StrictHostKeyChecking no
+          EOF
 
-      - name: Trigger Compose with Image
+
+      - name:  🔍 Confirm deploy input
         run: |
-          ssh ec2 'bash -s' << 'EOF'
-            cd ~/polybot
-            echo "
-            IMG_NAME=${{ inputs.image }}
-            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-            BOT_APP_URL=your-prod.domain.com
-            YOLO_URL=yolo
-            REGION=eu-north-1
-            BUCKET_NAME=your-bucket
-            " > .env
+          echo "Deploy received image: ${{ inputs.image }}"
 
-            docker compose -f docker-compose.prod.yaml pull
-            docker compose -f docker-compose.prod.yaml up -d
+      - name: Debug output image
+        run: |
+          echo "Image passed: ${{ inputs.image }}"
+
+
+      - name: Trigger Docker Compose remotely
+        run: |
+          
+          ssh ec2 <<EOF
+          cd ~/polybot
+          git fetch origin
+          git reset --hard origin/main
+    
+          echo "IMG_NAME=${{ inputs.image }}"  > .env
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "BOT_APP_URL=aseel-prod.fursa.click" >> .env
+          echo "YOLO_URL=${{ secrets.YOLO_URL }}" >> .env
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
+          echo "POLYBOT_ENV=prod" >> .env
+          
+          cat .env  # debug output
+    
+          docker compose -f docker-compose.prod.yaml pull
+          docker compose -f docker-compose.prod.yaml up -d
           EOF
