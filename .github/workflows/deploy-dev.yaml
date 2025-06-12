@@ -49,7 +49,7 @@ jobs:
             StrictHostKeyChecking no
           EOF
       - name: 🔍 Confirm deploy input: image
-        run: |
+         run: |
           
           echo "Deploy received image: ${{ inputs.image }}"
 
