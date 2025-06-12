@@ -24,7 +24,6 @@ jobs:
           docker build -t $img .
           docker push $img
           echo "image=$img" >> $GITHUB_OUTPUT
-
   deploy:
     needs: build
     uses: ./.github/workflows/deploy-dev.yaml
