@@ -67,7 +67,7 @@ jobs:
           git fetch origin
           git reset --hard origin/dev
     
-          echo "${{ inputs.image }}" > .env
+          echo "IMG_NAME=${{ inputs.image }}"  > .env
           echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
           echo "BOT_APP_URL=aseel-dev.fursa.click" >> .env
           echo "YOLO_URL=${{ secrets.YOLO_URL }}" >> .env
