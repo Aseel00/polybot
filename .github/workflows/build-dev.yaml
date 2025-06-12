@@ -34,3 +34,6 @@ jobs:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
       EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
       EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
+      YOLO_URL: ${{ secrets.YOLO_URL_DEV }}
+      REGION: ${{ secrets.REGION }}

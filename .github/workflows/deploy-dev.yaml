@@ -6,6 +6,21 @@ on:
       image:
         required: true
         type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      EC2_HOST:
+        required: true
+      EC2_USERNAME:
+        required: true
+      TELEGRAM_BOT_TOKEN:
+        required: true
+      YOLO_URL:
+        required: true
+      REGION:
+        required: true
+
+
   workflow_dispatch:
     inputs:
       image:
@@ -14,11 +29,6 @@ on:
 
 jobs:
   deploy:
-    env:
-      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-      EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
-      EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
-
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +49,7 @@ jobs:
       - name: Trigger Docker Compose remotely
         env:
           IMG_NAME: ${{ inputs.image }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
+
           BOT_APP_URL: aseel-dev.fursa.click
           YOLO_URL: ${{ secrets.YOLO_URL_DEV }}
           REGION: ${{ secrets.REGION }}
