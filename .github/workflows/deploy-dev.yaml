@@ -44,17 +44,18 @@ jobs:
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
         run: |
           ssh ec2 'bash -s' <<EOF
-cd ~/polybot
+          cd ~/polybot
 
-cat > .env <<EOL
-IMG_NAME=${IMG_NAME}
-TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-BOT_APP_URL=${BOT_APP_URL}
-YOLO_URL=${YOLO_URL}
-REGION=${REGION}
-BUCKET_NAME=${BUCKET_NAME}
-EOL
+          echo """
+          IMG_NAME=${IMG_NAME}
+          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+          BOT_APP_URL=${BOT_APP_URL}
+          YOLO_URL=${YOLO_URL}
+          REGION=${REGION}
+          BUCKET_NAME=${BUCKET_NAME}
+          """ > .env
 
-docker compose -f docker-compose.dev.yaml pull
-docker compose -f docker-compose.dev.yaml up -d
-EOF
+          docker compose -f docker-compose.dev.yaml pull
+          docker compose -f docker-compose.dev.yaml up -d
+          
+          EOF
