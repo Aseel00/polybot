@@ -35,7 +35,7 @@ jobs:
     uses: Aseel00/polybot/.github/workflows/deploy-dev.yaml@dev
     with:
 
-      image: ${{ needs.build.outputs.image }}
+      image: img
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
       EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
