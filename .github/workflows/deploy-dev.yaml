@@ -56,6 +56,8 @@ jobs:
         run: |
           ssh ec2 'bash -s' <<EOF
           cd ~/polybot
+          git fetch origin
+          git reset --hard origin/dev
 
           cat > .env <<EOL
           IMG_NAME=${{ env.IMG_NAME }}
