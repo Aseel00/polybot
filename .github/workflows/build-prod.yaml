@@ -20,13 +20,28 @@ jobs:
       - name: Build and Push Image
         id: build_and_push
         run: |
-          img=${{ secrets.DOCKERHUB_USERNAME }}/polybot-prod:${{ github.run_number }}
+          img=aseelarr/polybot-prod:${{ github.run_number }}
           docker build -t $img .
           docker push $img
-          echo "image=$img" >> $GITHUB_OUTPUT
+          echo "image=$img" >> "$GITHUB_OUTPUT"
+
+
+      - name: Confirm output
+        run: |
+          echo "Built image: ${{ steps.build_and_push.outputs.image }}"
 
   deploy:
     needs: build
-    uses: ./.github/workflows/deploy-prod.yaml
+    uses: Aseel00/polybot/.github/workflows/deploy-dev.yaml@main
     with:
-      image: ${{ needs.build.outputs.image }}
+
+      image: aseelarr/polybot-prod:${{ github.run_number }}
+
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST}}
+      EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      YOLO_URL: ${{ secrets.YOLO_URL }}
+      REGION: ${{ secrets.REGION }}
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}

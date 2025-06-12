@@ -39,9 +39,9 @@ jobs:
 
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-      EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
+      EC2_HOST_DEV: ${{ secrets.EC2_HOST_DEV }}
       EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
-      YOLO_URL: ${{ secrets.YOLO_URL_DEV }}
+      TELEGRAM_BOT_TOKEN_DEV: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
+      YOLO_URL_DEV: ${{ secrets.YOLO_URL_DEV }}
       REGION: ${{ secrets.REGION }}
-      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      BUCKET_NAME_DEV: ${{ secrets.BUCKET_NAME_DEV }}
