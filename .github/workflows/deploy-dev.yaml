@@ -57,14 +57,15 @@ jobs:
           ssh ec2 'bash -s' <<EOF
           cd ~/polybot
 
-          echo """
-          IMG_NAME=${IMG_NAME}
-          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-          BOT_APP_URL=${BOT_APP_URL}
-          YOLO_URL=${YOLO_URL}
-          REGION=${REGION}
-          BUCKET_NAME=${BUCKET_NAME}
-          """ > .env
+          cat > .env <<EOL
+          IMG_NAME=${{ env.IMG_NAME }}
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          BOT_APP_URL=${{ env.BOT_APP_URL }}
+          YOLO_URL=${{ secrets.YOLO_URL }}
+          REGION=${{ secrets.REGION }}
+          BUCKET_NAME=${{ secrets.BUCKET_NAME }}
+          EOL
+
 
           docker compose -f docker-compose.dev.yaml pull
           docker compose -f docker-compose.dev.yaml up -d
