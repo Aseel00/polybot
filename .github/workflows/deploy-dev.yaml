@@ -40,20 +40,19 @@ jobs:
           chmod 600 ~/.ssh/private_key
           cat > ~/.ssh/config <<EOF
           Host ec2
-            HostName $EC2_HOST
-            User $EC2_USERNAME
+            HostName ${{ secrets.EC2_HOST }}
+            User ${{ secrets.EC2_USERNAME }}
             IdentityFile ~/.ssh/private_key
             StrictHostKeyChecking no
           EOF
+
 
       - name: Trigger Docker Compose remotely
         env:
           IMG_NAME: ${{ inputs.image }}
 
           BOT_APP_URL: aseel-dev.fursa.click
-          YOLO_URL: ${{ secrets.YOLO_URL_DEV }}
-          REGION: ${{ secrets.REGION }}
-          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+
         run: |
           ssh ec2 'bash -s' <<EOF
           cd ~/polybot
