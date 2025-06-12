@@ -48,9 +48,9 @@ jobs:
             IdentityFile ~/.ssh/private_key
             StrictHostKeyChecking no
           EOF
-      - name: 🔍 Confirm deploy input: image
-         run: |
-          
+      - name:
+          🔍 Confirm deploy input: image
+        run: |
           echo "Deploy received image: ${{ inputs.image }}"
 
       - name: Debug output image
