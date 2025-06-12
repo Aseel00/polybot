@@ -49,6 +49,10 @@ jobs:
             StrictHostKeyChecking no
           EOF
 
+      - name: Debug output image
+        run: |
+          echo "Image passed: ${{ inputs.image }}"
+
 
       - name: Trigger Docker Compose remotely
         env:
