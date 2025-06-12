@@ -35,7 +35,7 @@ jobs:
     uses: Aseel00/polybot/.github/workflows/deploy-dev.yaml@dev
     with:
 
-      image: img=aseelarr/polybot-dev:${{ github.run_number }}
+      image: aseelarr/polybot-dev:${{ github.run_number }}
 
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
