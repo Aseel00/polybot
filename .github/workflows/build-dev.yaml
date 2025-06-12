@@ -28,4 +28,9 @@ jobs:
     needs: build
     uses: ./.github/workflows/deploy-dev.yaml
     with:
+
       image: ${{ needs.build.outputs.image }}
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST_DEV }}
+      EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
