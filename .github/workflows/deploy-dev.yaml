@@ -19,6 +19,9 @@ on:
         required: true
       REGION:
         required: true
+      BUCKET_NAME:
+        required: true
+
 
 
   workflow_dispatch:
@@ -60,7 +63,7 @@ jobs:
           git reset --hard origin/dev
 
           cat > .env <<EOL
-          IMG_NAME=${{ env.IMG_NAME }}
+          IMG_NAME=${{ inputs.image }}
           TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           BOT_APP_URL=${{ env.BOT_APP_URL }}
           YOLO_URL=${{ secrets.YOLO_URL }}
