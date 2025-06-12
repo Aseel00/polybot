@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  polybot:
+    image: ${IMG_NAME}
+    ports:
+      - "8443:8443"
+    env_file:
+      - .env
+    depends_on:
+      - yolo
+      - otelcol
+
+  yolo:
+    image: yourdockerhub/yolo:latest
+    # Optional: expose only if needed
+    # ports:
+    #   - "8080:8080"
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    volumes:
+      - ./otelcol-config.yaml:/etc/otelcol/config.yaml
+      - /proc:/hostfs/proc:ro
+      - /sys:/hostfs/sys:ro
+    environment:
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+    network_mode: host  # Optional: change to bridge + expose port if you don't need host-level access
