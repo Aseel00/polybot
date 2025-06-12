@@ -27,12 +27,14 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/private_key
           chmod 600 ~/.ssh/private_key
           cat > ~/.ssh/config <<EOF
-    Host ec2
-    HostName $EC2_HOST
-    User $EC2_USERNAME
-    IdentityFile ~/.ssh/private_key
-    StrictHostKeyChecking no
-EOF
+        Host ec2
+        HostName $EC2_HOST
+        User $EC2_USERNAME
+        IdentityFile ~/.ssh/private_key
+        StrictHostKeyChecking no
+        EOF
+
+
 
       - name: Trigger Docker Compose remotely
         env:
