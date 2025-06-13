@@ -50,10 +50,6 @@ jobs:
           EOF
 
 
-      - name:  🔍 Confirm deploy input
-        run: |
-          echo "Deploy received image: ${{ inputs.image }}"
-
       - name: Debug output image
         run: |
           echo "Image passed: ${{ inputs.image }}"
