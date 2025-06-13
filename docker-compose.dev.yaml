@@ -6,17 +6,20 @@ services:
       - "8443:8443"
     env_file:
       - .env
-  #  depends_on:
-   #   - yolo
+    depends_on:
+      - yolo
     #  - otelcol
 
-  #yolo:
-   # image: yourdockerhub/yolo:latest
+  yolo:
+    image: aseelarr/yolo-dev:10
     # Optional: expose only if needed
-    # ports:
-    #   - "8080:8080"
+    ports:
+       - "8080:8080"
+    environment:
+      - REGION=${REGION}
+      - BUCKET_NAME=${BUCKET_NAME}
 
-  #otelcol:
+      #otelcol:
    # image: otel/opentelemetry-collector-contrib:latest
     #volumes:
      # - ./otelcol-config.yaml:/etc/otelcol/config.yaml
