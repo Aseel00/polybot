@@ -137,7 +137,7 @@ class ImageProcessingBot(Bot):
                             self.send_text(chat_id, "Failed to upload image to S3.")
                             return
 
-                        yolo_api_url = f"http://{self.yolo_url}:8080/predict"
+                        yolo_api_url = f"{self.yolo_url}/predict"
                         data={"image_name":image_name}
                         response = requests.post(yolo_api_url, data=data)
 
