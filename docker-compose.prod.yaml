@@ -1,0 +1,34 @@
+
+services:
+  polybot:
+    image: ${IMG_NAME}
+    ports:
+      - "8443:8443"
+    env_file:
+      - .env
+    depends_on:
+      - yolo
+      - otelcol
+
+  yolo:
+    image: aseelarr/yolo-prod:12
+    # Optional: expose only if needed
+    ports:
+       - "8080:8080"
+    environment:
+      - REGION=${REGION}
+      - BUCKET_NAME=${BUCKET_NAME}
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otelcol
+    volumes:
+      - ./otelcol-config.yaml:/etc/otelcol/config.yaml
+      - /proc:/hostfs/proc:ro
+      - /sys:/hostfs/sys:ro
+    ports:
+      - "8889:8889"  # Prometheus scraper port
+    environment:
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+
