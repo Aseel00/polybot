@@ -56,6 +56,8 @@ jobs:
 
 
       - name: Trigger Docker Compose remotely
+        env:
+          YOLO_URL_DEV: ${{ secrets.YOLO_URL_DEV }}
         run: |
           
           ssh ec2 <<EOF
@@ -66,7 +68,7 @@ jobs:
           echo "IMG_NAME=${{ inputs.image }}"  > .env
           echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
           echo "BOT_APP_URL=aseel-prod.fursa.click" >> .env
-          echo "YOLO_URL=http://yolo:8080" >> .env
+          echo "YOLO_URL=http://$YOLO_URL_DEV:8080" >> .env
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
           echo "POLYBOT_ENV=prod" >> .env
