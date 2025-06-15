@@ -57,18 +57,22 @@ jobs:
 
       - name: Trigger Docker Compose remotely
         env:
-          YOLO_URL_DEV: ${{ secrets.YOLO_URL_DEV }}
+          YOLO_URL_PROD: ${{ secrets.YOLO_URL }}
         run: |
           
           ssh ec2 <<EOF
+          set -e 
           cd ~/polybot
           git fetch origin
           git reset --hard origin/main
     
+          sudo rm -f .env
+          touch .env && chmod 644 .env
+          
           echo "IMG_NAME=${{ inputs.image }}"  > .env
           echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
           echo "BOT_APP_URL=aseel-prod.fursa.click" >> .env
-          echo "YOLO_URL=http://$YOLO_URL_DEV:8080" >> .env
+          echo "YOLO_URL=http://$YOLO_URL_PROD:8080" >> .env
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
           echo "POLYBOT_ENV=prod" >> .env
