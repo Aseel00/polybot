@@ -1,0 +1,27 @@
+
+services:
+  polybot:
+    image: ${IMG_NAME}
+    ports:
+      - "8443:8443"
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      - otelcol
+
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:latest
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol/config.yaml"]
+    container_name: otelcol
+    volumes:
+      - ./otelcol-config.yaml:/etc/otelcol/config.yaml
+      - /proc:/hostfs/proc:ro
+      - /sys:/hostfs/sys:ro
+    ports:
+      - "8889:8889"  # Prometheus scraper port
+    environment:
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+

@@ -1,0 +1,50 @@
+# Don't include virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Git and CI-related
+.git
+.gitignore
+.github/
+
+# Logs and test output
+*.log
+coverage.*
+.pytest_cache/
+.tox/
+.nox/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+
+# Notebooks and caches
+.ipynb_checkpoints
+.mypy_cache/
+.pytype/
+.pyre/
+
+# Docker and Compose artifacts
+.dockerignore
+Dockerfile
+docker-compose*.yaml
+
+# Secrets or local configuration
+.env
+.env.*
+
+# IDE/editor folders
+.idea/
+.vscode/
+*.swp
+*.swo

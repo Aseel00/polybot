@@ -1,0 +1,47 @@
+name: Build Polybot Prod Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build_and_push.outputs.image }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and Push Image
+        id: build_and_push
+        run: |
+          img=aseelarr/polybot-prod:${{ github.run_number }}
+          docker build -t $img .
+          docker push $img
+          echo "image=$img" >> "$GITHUB_OUTPUT"
+
+
+      - name: Confirm output
+        run: |
+          echo "Built image: ${{ steps.build_and_push.outputs.image }}"
+
+  deploy:
+    needs: build
+    uses:  ./.github/workflows/deploy-prod.yaml
+    with:
+
+      image: aseelarr/polybot-prod:${{ github.run_number }}
+
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      EC2_HOST: ${{ secrets.EC2_HOST}}
+      EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      YOLO_URL: ${{ secrets.YOLO_URL }}
+      REGION: ${{ secrets.REGION }}
+      BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
