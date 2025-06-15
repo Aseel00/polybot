@@ -32,7 +32,7 @@ jobs:
 
   deploy:
     needs: build
-    uses:  ${{ github.repository }}/.github/workflows/deploy-dev.yaml@dev
+    uses:  ./.github/workflows/deploy-dev.yaml
     with:
 
       image: aseelarr/polybot-dev:${{ github.run_number }}
