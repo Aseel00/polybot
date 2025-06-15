@@ -1,79 +1,84 @@
-# The name of the workflow
-name: Yolo Deploy
+name: Polybot Deploy Prod
 
 on:
-  # The workflow will run when a push is made to branch `main`
-  push:
-    branches:
-     - main
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: true
+      EC2_HOST:
+        required: true
+      EC2_USERNAME:
+        required: true
+      TELEGRAM_BOT_TOKEN:
+        required: true
+      YOLO_URL:
+        required: true
+      REGION:
+        required: true
+      BUCKET_NAME:
+        required: true
 
-  # Allow to run it manually as well from GitHub web
+
+
   workflow_dispatch:
+    inputs:
+      image:
+        required: true
+        type: string
 
-# Environment variables
-env:
-  # The URL of the GitHub repository, taken from GitHub context variables
-  REPO_URL: ${{ github.server_url }}/${{ github.repository }}.git
-  # The name of the repository without owner, taken from GitHub context variables
-  REPO_NAME: ${{ github.event.repository.name }}
-
-# A workflow run is made up of one or more jobs. By default, different jobs are running concurrently
 jobs:
-  # This is a job named `Deploy`
-  Deploy:
-    # The type of machine to run the job on
+  deploy:
     runs-on: ubuntu-latest
 
-    # A job contains a sequence of tasks called steps
     steps:
-      # The first step, named **Checkout code**,
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Configure SSH
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/private_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/private_key
           chmod 600 ~/.ssh/private_key
-          cat > ~/.ssh/config << EOF
+          cat > ~/.ssh/config <<EOF
           Host ec2
-              HostName $EC2_HOST
-              User $EC2_USERNAME
-              IdentityFile ~/.ssh/private_key
-              StrictHostKeyChecking no
+            HostName ${{ secrets.EC2_HOST }}
+            User ${{ secrets.EC2_USERNAME }}
+            IdentityFile ~/.ssh/private_key
+            StrictHostKeyChecking no
           EOF
 
-      - name: Copy script to EC2
-        run: |
-          ssh ec2 "
-            if [ -d ~/${REPO_NAME} ]; then
-              cd ~/${REPO_NAME}
-              git fetch origin
-              git reset --hard origin/main
-            else
-              git clone --branch main ${REPO_URL} ~/${REPO_NAME}
-            fi
-          "
-        
-          
 
-      - name: Execute deploy.sh on EC2
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          YOLO_URL: ${{ secrets.YOLO_URL }}
-          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      - name: Debug output image
         run: |
-          ssh ec2 'bash -s' << 'EOF'
-            export TELEGRAM_BOT_TOKEN='${{ secrets.TELEGRAM_BOT_TOKEN }}'
-            export YOLO_URL='${{ secrets.YOLO_URL }}'
-            export NGROK_AUTHTOKEN='${{ secrets.NGROK_AUTHTOKEN }}'
-            export REGION= '${{ secrets.REGION }}'
-            export BUCKET_NAME= '${{ secrets.BUCKET_NAME }}'
-            export POLYBOT_ENV='${{ secrets.POLYBOT_ENV_PROD }}'
-            cd ~/${{ env.REPO_NAME }}
-            bash deploy-prod.sh
+          echo "Image passed: ${{ inputs.image }}"
+
+
+      - name: Trigger Docker Compose remotely
+        env:
+          YOLO_URL_PROD: ${{ secrets.YOLO_URL }}
+        run: |
+          
+          ssh ec2 <<EOF
+          set -e 
+          cd ~/polybot
+          git fetch origin
+          git reset --hard origin/main
+    
+          sudo rm -f .env
+          touch .env && chmod 644 .env
+          
+          echo "IMG_NAME=${{ inputs.image }}"  > .env
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+          echo "BOT_APP_URL=aseel-prod.fursa.click" >> .env
+          echo "YOLO_URL=http://$YOLO_URL_PROD:8080" >> .env
+          echo "REGION=${{ secrets.REGION }}" >> .env
+          echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
+          echo "POLYBOT_ENV=prod" >> .env
+          
+          cat .env  # debug output
+    
+          docker compose -f docker-compose.prod.yaml pull
+          docker compose -f docker-compose.prod.yaml up -d
           EOF
