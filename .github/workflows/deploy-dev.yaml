@@ -83,7 +83,7 @@ jobs:
           echo "POLYBOT_ENV=dev" >> .env
           echo "SQS_URL=${{ secrets.SQS_URL_DEV }}" >> .env
           echo "CALLBACK_BASE_URL=aseel-dev.fursa.click" >> .env
-          echo "TABLE_NAME=${{secrets.TABLE_NAME_DEV }}" >> .env
+          echo "DDB_TABLE_NAME=${{secrets.TABLE_NAME_DEV }}" >> .env
           
           cat .env  # debug output
     
