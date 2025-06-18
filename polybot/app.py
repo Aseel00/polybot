@@ -2,7 +2,7 @@ import flask
 from flask import request
 import os
 from polybot.bot import Bot, QuoteBot, ImageProcessingBot
-from storage.dynamodb import DynamoDBStorage
+from dynamo_storage import DynamoDBStorage
 
 app = flask.Flask(__name__)
 
