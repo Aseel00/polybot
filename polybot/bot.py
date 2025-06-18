@@ -7,6 +7,9 @@ from polybot.img_proc import Img
 import logging
 import boto3
 from botocore.exceptions import ClientError
+import uuid
+import json
+import boto3
 
 class Bot:
 
@@ -115,6 +118,8 @@ class ImageProcessingBot(Bot):
         self.s3_bucket=s3_bucket
         self.region=region
         self.concat_sessions = {}  # Store chat_id -> first image path
+        self.sqs_url = os.getenv("SQS_URL")
+        self.callback_base_url = os.getenv("CALLBACK_BASE_URL")
 
     def handle_message(self, msg):
         try:
@@ -137,20 +142,23 @@ class ImageProcessingBot(Bot):
                             self.send_text(chat_id, "Failed to upload image to S3.")
                             return
 
-                        yolo_api_url = f"{self.yolo_url}/predict"
+                        prediction_id = str(uuid.uuid4())
+                        sqs = boto3.client("sqs", region_name=self.region)
 
-                        data={"image_name":image_name}
-                        response = requests.post(yolo_api_url, data=data)
+                        message = {
+                            "image_name": image_name,
+                            "chat_id": chat_id,
+                            "prediction_id": prediction_id,
+                            "callback_url": f"{self.callback_base_url}/predictions/{prediction_id}"
+                        }
 
-                        response.raise_for_status()
-                        result = response.json()
-                        labels = result.get("labels", [])
+                        sqs.send_message(
+                            QueueUrl=self.sqs_url,
+                            MessageBody=json.dumps(message)
+                        )
 
+                        self.send_text(chat_id, "✅ Image received. We’ll notify you once the results are ready.")
 
-                        # Send image and labels
-                        label_list = " ".join(f" {label}" for label in labels) or "No objects detected."
-
-                        self.send_text(chat_id,label_list)
 
                     except Exception as e:
                         logger.error(f"YOLO detection error: {e}")

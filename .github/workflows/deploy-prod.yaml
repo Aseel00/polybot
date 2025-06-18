@@ -21,6 +21,8 @@ on:
         required: true
       BUCKET_NAME:
         required: true
+      SQS_URL_PROD:
+        required: true
 
 
 
@@ -76,6 +78,8 @@ jobs:
           echo "REGION=${{ secrets.REGION }}" >> .env
           echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> .env
           echo "POLYBOT_ENV=prod" >> .env
+          echo "SQS_URL=${{ secrets.SQS_URL_PROD }}" >> .env
+          echo "CALLBACK_BASE_URL=aseel-prod.fursa.click" >> .env
           
           cat .env  # debug output
     
