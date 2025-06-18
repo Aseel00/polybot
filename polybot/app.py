@@ -41,6 +41,8 @@ def receive_prediction(prediction_id):
         if not prediction:
             return "Prediction not found", 404
 
+        print("📦 Prediction objects:", prediction["detection_objects"])
+
         labels = [obj["label"] for obj in prediction["detection_objects"]]
         label_text = "Detected: " + ", ".join(labels) if labels else "No objects detected."
         bot.send_text(chat_id, label_text)
