@@ -12,8 +12,9 @@ YOLO_URL=os.environ['YOLO_URL']
 BUCKET_NAME=os.environ['BUCKET_NAME']
 REGION=os.environ['REGION']
 polybot_env=os.environ['POLYBOT_ENV']
+TABLE_NAME = os.environ["DDB_TABLE_NAME"]
 
-dynamo_storage = DynamoDBStorage(table_name="yolo_predictions", region=REGION)
+dynamo_storage = DynamoDBStorage(table_name=TABLE_NAME, region=REGION)
 
 @app.route('/', methods=['GET'])
 def index():

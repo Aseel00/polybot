@@ -46,3 +46,4 @@ jobs:
       REGION: ${{ secrets.REGION }}
       BUCKET_NAME_DEV: ${{ secrets.BUCKET_NAME_DEV }}
       SQS_URL_DEV: ${{ secrets.SQS_URL_DEV }}
+      TABLE_NAME_DEV: ${{ secrets.TABLE_NAME_DEV }}
