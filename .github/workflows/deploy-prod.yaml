@@ -23,6 +23,8 @@ on:
         required: true
       SQS_URL_PROD:
         required: true
+      TABLE_NAME:
+        required: true
 
 
 
@@ -80,6 +82,7 @@ jobs:
           echo "POLYBOT_ENV=prod" >> .env
           echo "SQS_URL=${{ secrets.SQS_URL_PROD }}" >> .env
           echo "CALLBACK_BASE_URL=aseel-prod.fursa.click" >> .env
+          echo "TABLE_NAME= secrets.TABLE_NAME" >> .env
           
           cat .env  # debug output
     
