@@ -32,7 +32,7 @@ def receive_prediction(prediction_id):
     try:
         data = request.get_json()
         chat_id = data.get("chat_id")
-
+        print("📨 Callback received:", data)
         if not chat_id:
             return "Missing chat_id", 400
 
@@ -40,6 +40,8 @@ def receive_prediction(prediction_id):
         prediction = dynamo_storage.get_prediction_by_uid(prediction_id)
         if not prediction:
             return "Prediction not found", 404
+
+        print("📦 Prediction objects:", prediction["detection_objects"])
 
         labels = [obj["label"] for obj in prediction["detection_objects"]]
         label_text = "Detected: " + ", ".join(labels) if labels else "No objects detected."
