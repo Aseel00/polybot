@@ -45,3 +45,5 @@ jobs:
       YOLO_URL: ${{ secrets.YOLO_URL }}
       REGION: ${{ secrets.REGION }}
       BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+      SQS_URL_PROD: ${{ secrets.SQS_URL_PROD }}
+      TABLE_NAME: ${{ secrets.TABLE_NAME }}
