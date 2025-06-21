@@ -119,7 +119,7 @@ class ImageProcessingBot(Bot):
         self.region=region
         self.concat_sessions = {}  # Store chat_id -> first image path
         self.sqs_url = os.getenv("SQS_URL")
-        self.callback_base_url = os.getenv("CALLBACK_BASE_URL")
+        #self.callback_base_url = os.getenv("CALLBACK_BASE_URL")
 
     def handle_message(self, msg):
         try:
@@ -149,7 +149,7 @@ class ImageProcessingBot(Bot):
                             "image_name": image_name,
                             "chat_id": chat_id,
                             "prediction_id": prediction_id,
-                            "callback_url": f"{self.callback_base_url}/predictions/{prediction_id}"
+                           # "callback_url": f"{self.callback_base_url}/predictions/{prediction_id}"
                         }
 
                         sqs.send_message(
