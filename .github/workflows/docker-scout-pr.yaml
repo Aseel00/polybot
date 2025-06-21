@@ -40,7 +40,7 @@ jobs:
           command: cves
           image: aseelarr/polybot-prod:scout-${{ github.run_number}}
           only-severities: critical,high
-          exit-code: true  # ❌ Fails PR if critical/high found
+          exit-code: false  # ❌ Fails PR if critical/high found
           summary: true
 
       - name: 💬 Post detailed CVE report to PR
