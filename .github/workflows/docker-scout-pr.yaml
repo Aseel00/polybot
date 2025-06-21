@@ -1,0 +1,55 @@
+name: 🔍 Docker Scout Scan on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write  # Needed to write scan summary as a PR comment
+
+jobs:
+  docker-scout-scan:
+    name: 🔎 Docker Scout Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🔐 DockerHub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🛠 Build and Push polybot-prod Docker image
+        run: |
+          IMAGE=aseelarr/polybot-prod:scout-${{ github.run_number}}
+          docker build -t $IMAGE -f Dockerfile .
+          docker push $IMAGE
+          
+
+      - name: 🚨 Fast fail CVE scan
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: aseelarr/polybot-prod:scout-${{ github.run_number}}
+          only-severities: critical,high
+          exit-code: true  # ❌ Fails PR if critical/high found
+          summary: true
+
+      - name: 💬 Post detailed CVE report to PR
+        if: always()  # Run even if previous step fails
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: aseelarr/polybot-prod:scout-${{ github.run_number}}
+          only-severities: critical,high
+          exit-code: false
+          summary: false
+          write-comment: true
