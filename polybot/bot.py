@@ -112,13 +112,13 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    def __init__(self, token,telegram_chat_url,polybot_env ="dev",s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
+    def __init__(self, token,telegram_chat_url,sqs_url="",polybot_env ="dev",s3_bucket="aseel-polybot-images",region="eu-north-1",yolo_url='localhost'):
         super().__init__(token, telegram_chat_url,polybot_env)
         self.yolo_url=yolo_url
         self.s3_bucket=s3_bucket
         self.region=region
         self.concat_sessions = {}  # Store chat_id -> first image path
-        self.sqs_url = os.getenv("SQS_URL")
+        self.sqs_url = sqs_url
         #self.callback_base_url = os.getenv("CALLBACK_BASE_URL")
 
     def handle_message(self, msg):

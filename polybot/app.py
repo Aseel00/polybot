@@ -3,16 +3,31 @@ from flask import request
 import os
 from polybot.bot import Bot, QuoteBot, ImageProcessingBot
 from polybot.dynamo_storage import DynamoDBStorage
+import boto3
+import json
+
+def load_secrets(secret_name, region):
+    client = boto3.client("secretsmanager", region_name=region)
+    response = client.get_secret_value(SecretId=secret_name)
+    secret = response["SecretString"]
+    return json.loads(secret)
+
+# Load secrets from AWS Secrets Manager
+region = os.getenv("REGION", "eu-north-1")  # fallback if not passed
+secrets = load_secrets("polybot-dev", region)
+
+TELEGRAM_BOT_TOKEN = secrets['TELEGRAM_BOT_TOKEN']
+BOT_APP_URL = secrets['BOT_APP_URL']
+YOLO_URL = secrets['YOLO_URL']
+BUCKET_NAME = secrets['BUCKET_NAME']
+REGION = secrets['REGION']
+polybot_env = secrets['POLYBOT_ENV']
+TABLE_NAME = secrets["DDB_TABLE_NAME"]
+SQS_URL =secrets["SQS_URL"]
 
 app = flask.Flask(__name__)
 
-TELEGRAM_BOT_TOKEN = os.environ['TELEGRAM_BOT_TOKEN']
-BOT_APP_URL = os.environ['BOT_APP_URL']
-YOLO_URL=os.environ['YOLO_URL']
-BUCKET_NAME=os.environ['BUCKET_NAME']
-REGION=os.environ['REGION']
-polybot_env=os.environ['POLYBOT_ENV']
-TABLE_NAME = os.environ["DDB_TABLE_NAME"]
+
 
 dynamo_storage = DynamoDBStorage(table_name=TABLE_NAME, region=REGION)
 
@@ -55,6 +70,6 @@ if __name__ == "__main__":
     #bot = Bot(TELEGRAM_BOT_TOKEN, TELEGRAM_APP_URL)
     #bot = Bot(TELEGRAM_BOT_TOKEN, BOT_APP_URL)
     #bot = QuoteBot(TELEGRAM_BOT_TOKEN, BOT_APP_URL)
-    bot = ImageProcessingBot(TELEGRAM_BOT_TOKEN, BOT_APP_URL,polybot_env,BUCKET_NAME,REGION,YOLO_URL)
+    bot = ImageProcessingBot(TELEGRAM_BOT_TOKEN, BOT_APP_URL,SQS_URL,polybot_env,BUCKET_NAME,REGION,YOLO_URL)
 
     app.run(host='0.0.0.0', port=8443)
